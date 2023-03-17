@@ -7,11 +7,20 @@ set -e
 
 case "$(uname -s)" in
 	"Darwin")
-		DOWNLOAD_URL="https://github.com/tsenart/vegeta/releases/download/v${ASDF_INSTALL_VERSION}/vegeta-${ASDF_INSTALL_VERSION}-darwin-amd64.tar.gz"
+		URLS=(
+			"https://github.com/tsenart/vegeta/releases/download/v${ASDF_INSTALL_VERSION}/vegeta-${ASDF_INSTALL_VERSION}-darwin-amd64.tar.gz"
+			"https://github.com/tsenart/vegeta/releases/download/v${ASDF_INSTALL_VERSION}/vegeta_${ASDF_INSTALL_VERSION}_darwin_amd64.tar.gz"
+		)
 		;;
 	"Linux")
-		DOWNLOAD_URL="https://github.com/tsenart/vegeta/releases/download/v${ASDF_INSTALL_VERSION}/vegeta-${ASDF_INSTALL_VERSION}-linux-amd64.tar.gz"
+		URLS=(
+			"https://github.com/tsenart/vegeta/releases/download/v${ASDF_INSTALL_VERSION}/vegeta-${ASDF_INSTALL_VERSION}-linux-amd64.tar.gz"
+			"https://github.com/tsenart/vegeta/releases/download/v${ASDF_INSTALL_VERSION}/vegeta_${ASDF_INSTALL_VERSION}_linux_amd64.tar.gz"
+		)
 		;;
 esac
 
-curl -fL -o "${ASDF_DOWNLOAD_PATH}/vegeta.tar.gz" "${DOWNLOAD_URL}"
+for URL in "${URLS[@]}"; do
+	echo "Trying to download tarball from ${URL}" >&2
+	{ curl -fL -o "${ASDF_DOWNLOAD_PATH}/vegeta.tar.gz" "$URL" && break; } || echo "Trying next URL" >&2
+done
